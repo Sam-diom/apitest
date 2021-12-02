@@ -1,67 +1,36 @@
-import express from 'express'
-import mongoose from 'mongoose'
-const app = express()
+import express from "express";
+import mongoose from "mongoose";
+import bodyParser from "body-parser";
+import routes from "./src/routes/crmRoutes.js";
 
+const app = express();
+const PORT = 3000;
 
-//Define the schema for the Book model
-const BookSchema = new mongoose.Schema({
-    title: String,
-    author: String,
-    publishedDate: Date,
-    description: String,
-});
+//connexion mangoose
 
-const Book = mongoose.model("Book", BookSchema);
+async function asyncCall() {
+  // mongoose.Promise = global.Promise;
+  try {
+    await mongoose.connect("mongodb://127.0.0.1:27017/CRMdb");
+    console.log("conneted mongodb");
+  } catch (err) {
+    console.log("err", err);
+  }
+}
+//{
+//  useNewUrlParser: true
+//   });
+asyncCall();
 
-// Define the API routes    
-app.get("/books", function (req, res) {
-    Book.find(function (err, books) {
-        if (err) {
-            res.send(err);
-        }
-        res.json(book);
-    });
-});
+//bodyparser
 
-app.post("/books", function (req, res) {
-    Book.create(req.body, function (err, book) {
-        if (err) {
-            res.send(err);
-        }
-        res.json(book);
-    });
-    console.log(req.body)
-});
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-app.get("/books/:id", function (req, res) {
-    Book.findById(req.params.id, function (err, book) {
-        if (err) {
-            res.send(err)
-        }
-        res.json(book);
-    });
-});
+routes(app);
 
-app.put("/books/:id", function (req, res) {
-    Book.findByIdAndUpdate(req.params.id, req.body, function (err, book) {
-        if (err) {
-            res.send(err);
-        }
-        res.json(book);
-    });
-});
+app.get("/", (req, res) =>
+  res.send(`Serveur node et express sur port ${PORT}`)
+);
 
-app.delete("/books/:id", function (req, res){
-    Book.findByIdAndRemove(req.params.id, function (err, book) {
-        if (err) {
-            res.send(err);
-        }
-        res.json(book);
-    });
-});
-
-//start server
-app.listen(3000, function () {
-    console.log("server listening on port 3000")
-});
-
+app.listen(PORT, () => console.log(`Votre serveur est sur le port ${PORT}`));
