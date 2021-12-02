@@ -1,5 +1,5 @@
 import { runInNewContext } from "vm";
-import { addNewContact, getContact} from '../controllers/crmControllers.js';
+import { addNewContact, deleteContact, getContact, getContactWithId, updateContact} from '../controllers/crmControllers.js';
 
 const routes = (app) => {
     app
@@ -13,10 +13,10 @@ const routes = (app) => {
 
       .post(addNewContact);
     
-     app.route("/contact/:id")
-
-       .put((req, res) => res.send('demande PUT avec succès'))
-       .delete((req, res) => res.send('demande DELETE avec succès'));
-    
+  app.route("/contact/:contactId")
+    .get(getContactWithId)
+       
+    .put(updateContact)
+    .delete(deleteContact);
 }
 export default routes;
